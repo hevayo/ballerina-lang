@@ -646,6 +646,8 @@ public class Desugar extends BLangNodeVisitor {
 
         functionSymbol.scope = new Scope(functionSymbol);
         bLangFunction.symbol = functionSymbol;
+
+        env.scope.define(functionSymbol.name, functionSymbol);
     }
 
     /**
