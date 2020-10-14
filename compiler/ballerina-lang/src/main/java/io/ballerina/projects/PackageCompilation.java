@@ -17,6 +17,7 @@
  */
 package io.ballerina.projects;
 
+import io.ballerina.projects.environment.EnvironmentContext;
 import io.ballerina.projects.environment.PackageResolver;
 import io.ballerina.projects.environment.ProjectEnvironmentContext;
 import io.ballerina.tools.diagnostics.Diagnostic;
@@ -52,9 +53,10 @@ public class PackageCompilation {
         packageContext.resolveDependencies();
 
         ProjectEnvironmentContext projectEnvContext = packageContext.project().environmentContext();
+        EnvironmentContext environmentContext = projectEnvContext.getService(EnvironmentContext.class);
         this.packageResolver = projectEnvContext.getService(PackageResolver.class);
         this.dependencyGraph = buildDependencyGraph();
-        CompilerContext compilerContext = projectEnvContext.getService(CompilerContext.class);
+        CompilerContext compilerContext = environmentContext.compilerContext();
         compile(compilerContext);
     }
 
@@ -76,6 +78,7 @@ public class PackageCompilation {
     }
 
     private void compile(CompilerContext compilerContext) {
+        Bootstrap.getInstance().loadLangLib(compilerContext, packageResolver);
         diagnostics = new ArrayList<>();
         // Topologically sort packages in the package dependency graph.
         // Iterate through the sorted package list

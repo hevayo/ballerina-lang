@@ -17,6 +17,8 @@
  */
 package io.ballerina.projects.utils;
 
+import io.ballerina.projects.Package;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
@@ -124,6 +126,14 @@ public class ProjectUtils {
             return packageName.replaceAll("[^a-z0-9_]", "_");
         }
         return packageName;
+    }
+
+    public static String getBaloName(Package pkg) {
+        return ProjectUtils.getBaloName(pkg.packageOrg().toString(),
+                pkg.packageName().toString(),
+                pkg.packageVersion().toString(),
+                null
+        );
     }
 
     public static String getBaloName(String org, String pkgName, String version, String platform) {

@@ -19,9 +19,11 @@
 package org.ballerinalang.stdlib.utils;
 
 import io.ballerina.projects.Package;
+import io.ballerina.projects.PackageCompilation;
 import io.ballerina.projects.Project;
 import io.ballerina.projects.directory.BuildProject;
 import io.ballerina.projects.model.Target;
+import io.ballerina.projects.utils.ProjectConstants;
 import io.ballerina.projects.writers.BaloWriter;
 
 import java.io.IOException;
@@ -37,21 +39,24 @@ import java.nio.file.Paths;
 public class BuildLangLib {
 
     static Path projectDir;
+    static Path distCache;
 
     public static void main(String[] args) throws IOException {
         PrintStream out = System.out;
         projectDir = Paths.get(args[0]);
+        distCache = Paths.get(args[1]);
+        System.setProperty(ProjectConstants.BALLERINA_INSTALL_DIR_PROP, distCache.toString());
         out.println("Building langlib ...");
         out.println("Project Dir: " + projectDir);
         Project project = BuildProject.loadProject(projectDir);
         Target target = new Target(projectDir);
         Package pkg = project.currentPackage();
-        /*PackageCompilation packageCompilation = pkg.getCompilation();
+        PackageCompilation packageCompilation = pkg.getCompilation();
         if ( packageCompilation.diagnostics().size() > 0) {
             out.println("Error building module");
             packageCompilation.diagnostics().forEach(d -> out.println(d.toString()));
             System.exit(1);
-        }*/
+        }
         BaloWriter.write(pkg, target.getBaloPath(pkg));
     }
 

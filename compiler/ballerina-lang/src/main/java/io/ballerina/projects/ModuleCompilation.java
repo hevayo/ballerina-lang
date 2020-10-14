@@ -17,12 +17,10 @@
  */
 package io.ballerina.projects;
 
+import io.ballerina.projects.environment.EnvironmentContext;
 import io.ballerina.projects.environment.PackageResolver;
 import io.ballerina.projects.environment.ProjectEnvironmentContext;
-import io.ballerina.projects.internal.CompilerPhaseRunner;
 import io.ballerina.tools.diagnostics.Diagnostic;
-import org.wso2.ballerinalang.compiler.PackageCache;
-import org.wso2.ballerinalang.compiler.semantics.model.SymbolTable;
 import org.wso2.ballerinalang.compiler.tree.BLangPackage;
 import org.wso2.ballerinalang.compiler.util.CompilerContext;
 
@@ -34,8 +32,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import static org.ballerinalang.model.elements.PackageID.ANNOTATIONS;
 
 /**
  *
@@ -58,8 +54,9 @@ public class ModuleCompilation {
 
         // TODO Figure out a better way to handle this
         ProjectEnvironmentContext projectEnvContext = packageContext.project().environmentContext();
+        EnvironmentContext environmentContext = projectEnvContext.getService(EnvironmentContext.class);
         this.packageResolver = projectEnvContext.getService(PackageResolver.class);
-        this.compilerContext = projectEnvContext.getService(CompilerContext.class);
+        this.compilerContext = environmentContext.compilerContext();
         this.dependencyGraph = buildDependencyGraph();
         compile();
     }
@@ -93,13 +90,7 @@ public class ModuleCompilation {
     }
 
     private void compile() {
-        SymbolTable symbolTable = SymbolTable.getInstance(compilerContext);
-        PackageCache packageCache = PackageCache.getInstance(compilerContext);
-
-        // TODO This is a temporary workaround to compile and store the lang.annotations modules
-        CompilerPhaseRunner compilerPhaseRunner = CompilerPhaseRunner.getInstance(compilerContext);
-        symbolTable.langAnnotationModuleSymbol = compilerPhaseRunner.getLangModuleFromSource(ANNOTATIONS);
-        packageCache.putSymbol(ANNOTATIONS, symbolTable.langAnnotationModuleSymbol);
+        Bootstrap.getInstance().loadLangLib(compilerContext, packageResolver);
 
         // Compile all the modules
         diagnostics = new ArrayList<>();
