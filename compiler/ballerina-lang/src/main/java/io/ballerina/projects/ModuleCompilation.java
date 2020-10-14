@@ -90,8 +90,6 @@ public class ModuleCompilation {
     }
 
     private void compile() {
-        Bootstrap.getInstance().loadLangLib(compilerContext, packageResolver);
-
         // Compile all the modules
         diagnostics = new ArrayList<>();
         List<ModuleId> sortedModuleIds = dependencyGraph.toTopologicallySortedList();

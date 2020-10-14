@@ -78,7 +78,6 @@ public class PackageCompilation {
     }
 
     private void compile(CompilerContext compilerContext) {
-        Bootstrap.getInstance().loadLangLib(compilerContext, packageResolver);
         diagnostics = new ArrayList<>();
         // Topologically sort packages in the package dependency graph.
         // Iterate through the sorted package list
