@@ -190,7 +190,11 @@ class ModuleContext {
         PackageID pkgID = new PackageID(new Name(packageDescriptor.org().toString()),
                 new Name(this.moduleName.toString()), new Name(packageDescriptor.version().toString()));
 
-        bootstrap.loadLangLib(compilerContext, packageResolver, pkgID);
+        if (PackageID.isLangLibPackageID(pkgID)) {
+            bootstrap.loadLangLib(compilerContext, packageResolver, pkgID);
+        } else {
+            bootstrap.loadLangLibSymbols(compilerContext, packageResolver);
+        }
 
         // if this is already loaded from BALO, then skip rest of the compilation
         if (packageCache.get(pkgID) != null) {
